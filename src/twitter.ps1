@@ -5,8 +5,6 @@ $url_search_customtools='https://twitter.com/search?q=%23customtools%20since%3A2
 $excelFileName = "desktop\out{0}.xlsx" -f (Get-Date -Format HH:mm:ss.fff)
 $outputpath = join-path -Path $env:USERPROFILE -ChildPath $excelFileName
 
-$spr = "~"
-
 
 #create excel file
 $excelFile = New-Object -ComObject excel.application
@@ -25,9 +23,11 @@ $excelWorksheet.Cells.Item(1,4)="Retweets"
 $excelWorksheet.Cells.Item(1,5)="Likes"
 $excelWorksheet.Cells.Item(1,6)="Message"
 
+$excelWorksheet.Columns("F").ColumnWidth = 75
+
 $rowNbr = 2;
 
-#invoke
+#invoke web request
 $webResponseObject = Invoke-WebRequest -Uri $url_search_customtools
 
 $webResponseObject.AllElements | ForEach-Object {
@@ -40,7 +40,7 @@ $webResponseObject.AllElements | ForEach-Object {
             $excelWorksheet.Hyperlinks.Add(
                 $excelWorksheet.Cells.Item($rowNbr,3),
                     "https://twitter.com" + $_.'data-permalink-path') | Out-Null
-            $excelWorksheet.Cells.Item($rowNbr,4)=$_.innerText
+            $excelWorksheet.Cells.Item($rowNbr,6)=$_.innerText
             # likes: <SPAN class="ProfileTweet-action--favorite u-hiddenVisually"><SPAN class=ProfileTweet-actionCount data-tweet-stat-count="2">
             # retweets: <SPAN class="ProfileTweet-action--retweet u-hiddenVisually"><SPAN class=ProfileTweet-actionCount data-tweet-stat-count="1">
             $rowNbr++
